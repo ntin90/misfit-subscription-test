@@ -53,40 +53,5 @@ module.exports = {
         );
 
         res.redirect('/');
-    },
-
-    misfitEndPoint: function (req, res) {
-        var type = req.body.type;
-        switch (type) {
-            case Constant.SNS_MESSAGE_TYPE.SUBSCRIPTION_CONFIRMATION:
-                subscriptionConfirmation(req);
-                break;
-            case Constant.SNS_MESSAGE_TYPE.NOTIFICATION:
-                break;
-        }
-
-        res.json({}, 200);
     }
-
 };
-
-function subscriptionConfirmation(req) {
-    var subscribeURL = req.body.SubscribeURL;
-    var options = {
-        url: subscribeURL,
-        headers: {access_token: accessToken}
-    };
-    request.get(options, function (err, response, body) {
-            console.log(body);
-        }
-    );
-}
-
-
-function receivedNotification(req) {
-
-    var messages = req.body.Message;
-    messages.forEach(function (message) {
-
-    });
-}
