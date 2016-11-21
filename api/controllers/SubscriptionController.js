@@ -23,7 +23,6 @@ module.exports = {
     }
 };
 
-
 function subscriptionConfirmation(req, res) {
     sails.log.debug(">>> Received message successfully");
 
@@ -46,12 +45,7 @@ function subscriptionConfirmation(req, res) {
 
 }
 
-
 function receivedNotification(req, res) {
     sails.log.debug(req.body);
-    var messages = req.body.Message;
-    messages.forEach(function(message) {
-        sails.log.debug(message);
-    });
     return res.status(200).json({});
 }
