@@ -50,7 +50,7 @@ function subscriptionConfirmation(req, res) {
 function receivedNotification(req, res) {
     var messages = req.body.Message;
     messages.forEach(function (message) {
-        console.log(message);
+        sails.log.debug(message);
     });
 
 }
