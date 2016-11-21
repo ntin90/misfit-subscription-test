@@ -35,7 +35,7 @@ module.exports = {
     //   level: "silent"
     // }
 
-    "self_host": "http://localhost:1337",
+    "self_host": "https://misfit-subscription-test.herokuapp.com",
     "app_key": "eFEGFWG91SxanWl7",
     "app_secret": "E0dte0nW09fw5E3m2dseN0Nm761ovGzH"
 };
