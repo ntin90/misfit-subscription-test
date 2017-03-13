@@ -19,14 +19,15 @@
     "grunt-sails-linker": "~0.10.1",
     "grunt-sync": "0.5.2",
     "include-all": "^1.0.0",
-    "rc": "1.0.1",
-    "sails": "~0.12.10",
-    "sails-disk": "~0.10.9",
+    "jquery": "^3.1.1",
     "passport": "^0.2.0",
     "passport-facebook": "^1.0.3",
     "passport-google-oauth": "0.1.5",
     "passport-twitter": "1.0.2",
-    "request": "2.49.0"
+    "rc": "1.0.1",
+    "request": "2.49.0",
+    "sails": "~0.12.10",
+    "sails-disk": "~0.10.9"
   },
   "scripts": {
     "debug": "node debug app.js",
