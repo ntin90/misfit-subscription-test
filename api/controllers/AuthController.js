@@ -12,8 +12,8 @@ module.exports = {
         res.view();
     },
     logout: function (req, res) {
-        res.clearCookie('AT');
-        res.clearCookie('UID');
+        delete req.session.UID;
+        delete req.session.AT;
         res.redirect('/');
     },
     misfit: function (req, res) {
@@ -45,12 +45,14 @@ module.exports = {
                     var accessToken = body.access_token;
                     var tokenType = body.token_type;
                     console.log(body);
-                    res.cookie("AT", body.access_token);
+                    req.session.AT = body.access_token;
                     request.get('https://openapi-portfolio-int.linkplatforms.com/v1/user/me',
                       { 'auth': {'bearer': body.access_token}, 'json': true},
                       function (error, response, body) {
+                        sails.log.info('User me:');
+                        sails.log.info(body);
                         if (!error && response.statusCode == 200) {
-                          res.cookie('UID', body.objectId);
+                          req.session.UID = body.objectId;
                           res.redirect('/');
                         } else {
                           sails.log.error('Cannot get UID');

@@ -36,8 +36,8 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/hungtran/misfit-subscription-test.git"
+    "url": "git://github.com/ntin90/misfit-subscription-test.git"
   },
-  "author": "hungtran",
+  "author": "ntin90",
   "license": ""
 }

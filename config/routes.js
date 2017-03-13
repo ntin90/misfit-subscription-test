@@ -33,25 +33,29 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/': function (req, res) {
-    var uid = req.cookies['UID'];
-    console.log(uid);
-    User.findOne({uid: uid}).exec(function(err, u) {
-      if (err) {
-        res.json(502, {
-          error: err
-        })
-      } else {
-        Fitness.find({uid: uid}).exec(function(err, f) {
-          if (err) {
-            res.json(502, {
-              error: err
-            })
-          } else {
-            res.view('homepage', {user: u, fitness: f});
-          }
-        })
-      }
-    });
+    var uid = req.session.UID;
+    if (uid) {
+      sails.log.info('Found UID in session: ' + uid);
+      User.findOne({uid: uid}).exec(function (err, u) {
+        if (err) {
+          res.json(502, {
+            error: err
+          })
+        } else {
+          Fitness.find({uid: uid}).exec(function (err, f) {
+            if (err) {
+              res.json(502, {
+                error: err
+              })
+            } else {
+              res.view('homepage', {user: u, fitness: f});
+            }
+          })
+        }
+      });
+    } else {
+      res.view('homepage', {user: null, fitness: null});
+    }
   }
 
   /***************************************************************************
