@@ -9,7 +9,8 @@
       <h3>User Info</h3>
       <h5>https://openapi-portfolio-int.linkplatforms.com/v1/user/me</h5>
       <div id="user-info">
-        <%= JSON.stringify(user, null, 2) %>
+        <div><%= JSON.stringify(user, null, 2) %></div>
+        <div><a href="/resource/pullUser">Sync user</a></div>
       </div>
   </div>
 
@@ -18,7 +19,10 @@
         <h3>Fitness Info</h3>
         <h5>https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date</h5>
         <div id="fitness-info">
-          <%= JSON.stringify(fitness, null, 2) %>
+          <div><%= JSON.stringify(fitness, null, 2) %></div>
+          <div><a href="/resource/pullFitness?date=<% var d = new Date(); var d_str = d.getFullYear() + '-'
+              + ('0' + (d.getMonth()+1)).slice(-2) + '-'
+              + ('0' + d.getDate()).slice(-2);%><%= d_str %>">Sync fitness</a></div>
         </div>
       </div>
     </div>
