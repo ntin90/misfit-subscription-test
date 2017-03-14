@@ -33,7 +33,8 @@ module.exports.routes = {
   ***************************************************************************/
 
   '/': function (req, res) {
-    var uid = req.session.UID;
+    var uid = req.session.me;
+    sails.log.info(req.session);
     if (uid) {
       sails.log.info('Found UID in session: ' + uid);
       User.findOne({uid: uid}).exec(function (err, u) {

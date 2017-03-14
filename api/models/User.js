@@ -25,6 +25,10 @@ module.exports = {
       type: 'float'
     },
     
+    last_token: {
+      type: 'string'
+    },
+    
     changed: {
       type: 'boolean'
     }

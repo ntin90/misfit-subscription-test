@@ -12,8 +12,8 @@ module.exports = {
         res.view();
     },
     logout: function (req, res) {
-        delete req.session.UID;
-        delete req.session.AT;
+        delete req.session.me;
+        delete req.session.authenticated;
         res.redirect('/');
     },
     misfit: function (req, res) {
@@ -42,18 +42,36 @@ module.exports = {
             },
             function (error, response, body) {
                 if (!error && response.statusCode == 200) {
-                    var accessToken = body.access_token;
-                    var tokenType = body.token_type;
+                    var access_token = body.access_token;
+                    var token_type = body.token_type;
                     console.log(body);
-                    req.session.AT = body.access_token;
                     request.get('https://openapi-portfolio-int.linkplatforms.com/v1/user/me',
                       { 'auth': {'bearer': body.access_token}, 'json': true},
                       function (error, response, body) {
                         sails.log.info('User me:');
                         sails.log.info(body);
                         if (!error && response.statusCode == 200) {
-                          req.session.UID = body.objectId;
-                          res.redirect('/');
+                          req.session.me = body.objectId;
+                          req.session.authenticated = true;
+                          User.update({uid: body.objectId}, { last_token: access_token }).exec(function (err, u) {
+                            if (err) {
+                              sails.log.error(err);
+                              res.json(502, {error:err})
+                            } else {
+                              if (u.length==0) {
+                                User.create({uid: body.objectId, last_token: access_token }).exec(function (err, u) {
+                                  if (err) {
+                                    sails.log.error(err);
+                                    res.json(502, {error:err})
+                                  } else {
+                                    res.redirect('/');
+                                  }
+                                });
+                              } else {
+                                res.redirect('/');
+                              }
+                            }
+                          });
                         } else {
                           sails.log.error('Cannot get UID');
                           res.redirect('/');

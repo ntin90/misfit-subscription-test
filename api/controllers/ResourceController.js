@@ -4,63 +4,66 @@ var request = require('request');
 
 module.exports = {
   pullUser: function (req, res) {
-    var token = req.cookies['AT'];
-    console.log(token);
-    request.get('https://openapi-portfolio-int.linkplatforms.com/v1/user/me',
-      {'auth': {'bearer': token}, 'json': true},
-      function (error, response, body) {
-        console.log(body);
-        if (!error && response.statusCode == 200) {
-          var uid = body.objectId;
-          User.update({uid: uid}, {
-            first_name: body.firstName,
-            last_name: body.lastName,
-            weight: body.weight,
-            height: body.height,
-            changed: false
-          }).exec(function (err, updated) {
-            if (err) {
-              res.json(502, {
-                error: err
-              })
-            } else {
-              if (updated.length == 0) {
-                User.create({
-                  uid: uid,
-                  first_name: body.firstName,
-                  last_name: body.lastName,
-                  weight: body.weightInGrams,
-                  height: body.heightInCentimeters,
-                  changed: false
-                }).exec(function (err) {
-                  if (err) {
-                    res.json(502, {
-                      error: err
-                    })
-                  }
-                });
+    User.findOne({uid: req.session.me}).exec(function (err, user) {
+      var token = user.last_token;
+      sails.log.info("Use token: " +token);
+      request.get('https://openapi-portfolio-int.linkplatforms.com/v1/user/me',
+        {'auth': {'bearer': token}, 'json': true},
+        function (error, response, body) {
+          sails.log.info("Pull user "+user.uid+". Body: " + JSON.stringify(body));
+          if (!error && response.statusCode == 200) {
+            var uid = body.objectId;
+            User.update({uid: uid}, {
+              first_name: body.firstName,
+              last_name: body.lastName,
+              weight: body.weight,
+              height: body.height,
+              changed: false
+            }).exec(function (err, updated) {
+              if (err) {
+                res.json(502, {
+                  error: err
+                })
+              } else {
+                if (updated.length == 0) {
+                  User.create({
+                    uid: uid,
+                    first_name: body.firstName,
+                    last_name: body.lastName,
+                    weight: body.weightInGrams,
+                    height: body.heightInCentimeters,
+                    changed: false
+                  }).exec(function (err) {
+                    if (err) {
+                      res.json(502, {
+                        error: err
+                      })
+                    }
+                  });
+                }
+                res.redirect('/');
               }
-              res.redirect('/');
-            }
-          })
-        } else {
-          res.json(502, {
-            error: error,
-            body: body
-          });
+            })
+          } else {
+            res.json(502, {
+              error: error,
+              body: body
+            });
+          }
         }
-      }
-    );
+      );
+    });
   },
 
   pullFitness: function (req, res)  {
-      var date = req.param('date');
-      var token = req.cookies['AT'];
-      console.log(token);
+    var date = req.param('date');
+    User.findOne({uid: req.session.me}).exec(function (err, user) {
+      var token = user.last_token;
+      sails.log.info("Use token :" + token);
       request.get('https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date/'+date,
         { 'qs': { 'beginDate': date, 'endDate': date}, 'auth': { 'bearer': token}, 'json': true},
         function (error, response, body) {
-          console.log(body);
+          sails.log.info("Pull fitness "+date+" of user "+user.uid+". Body: " + JSON.stringify(body));
           if (!error && response.statusCode == 200) {
             var uid = body.owner;
             Fitness.update({uid: uid, date: date}, {
@@ -68,7 +71,7 @@ module.exports = {
               changed: false
             }).exec(function (err, updated) {
               if (err) {
-                console.log(err);
+                sails.log.error(err);
                 return res.json(502, {
                   error: err
                 })
@@ -83,7 +86,7 @@ module.exports = {
                       changed: false
                     }).exec(function (err) {
                       if (err) {
-                        console.log(err);
+                        sails.log.error(err);
                         return res.json(502, {
                           error: err
                         })
@@ -95,7 +98,7 @@ module.exports = {
               }
             })
           } else {
-            console.log(error);
+            sails.log.error(error);
             return res.json(502, {
               error: error,
               body: body
@@ -103,6 +106,8 @@ module.exports = {
           }
         }
       );
+    });
+    
 
     // res.redirect('/resource/show');
   }
