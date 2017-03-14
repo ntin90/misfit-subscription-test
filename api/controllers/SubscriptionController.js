@@ -58,10 +58,13 @@ function receivedNotification(req, res) {
     case "user":
       User.update({uid: id}, {changed: true}).exec(function(err, u) {
         if (err) { sails.log.error(err); }
-        if (u.length==0) {
-          User.create({uid: id, changed: true}).exec(function(err) {
-            if (err) { sails.log.error(err); }
-          })
+        else {
+          sails.log.info(u);
+          if (u.length == 0) {
+            User.create({uid: id, changed: true}).exec(function (err) {
+              if (err) { sails.log.error(err); }
+            })
+          }
         }
       });
       break;
