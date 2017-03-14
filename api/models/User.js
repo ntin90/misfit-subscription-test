@@ -29,6 +29,10 @@ module.exports = {
       type: 'string'
     },
     
+    href: {
+      type: 'string'
+    },
+    
     changed: {
       type: 'boolean'
     }

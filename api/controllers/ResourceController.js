@@ -61,7 +61,7 @@ module.exports = {
       var token = user.last_token;
       sails.log.info("Use token :" + token);
       request.get('https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date/'+date,
-        { 'qs': { 'beginDate': date, 'endDate': date}, 'auth': { 'bearer': token}, 'json': true},
+        { 'auth': { 'bearer': token}, 'json': true},
         function (error, response, body) {
           sails.log.info("Pull fitness "+date+" of user "+user.uid+". Body: " + JSON.stringify(body));
           if (!error && response.statusCode == 200) {
@@ -96,7 +96,18 @@ module.exports = {
                 }
                 return res.redirect('/');
               }
-            })
+            });
+            Fitness.find({uid: uid, changed: true}).exec(function(err, f) {
+              f.forEach(function(e, i) {
+                request.get(e.href,
+                  { 'auth': { 'bearer': token}, 'json': true},
+                  function (error, response, body) {
+                    e.steps = body.totalSteps;
+                    e.save();
+                  }
+                );
+              });
+            });
           } else {
             sails.log.error(error);
             return res.json(502, {
@@ -107,7 +118,7 @@ module.exports = {
         }
       );
     });
-    
+
 
     // res.redirect('/resource/show');
   }

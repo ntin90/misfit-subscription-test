@@ -21,6 +21,10 @@ module.exports = {
       type: 'integer'
     },
 
+    href: {
+      type: 'string'
+    },
+
     changed: {
       type: 'boolean'
     }

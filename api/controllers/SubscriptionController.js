@@ -53,6 +53,7 @@ function receivedNotification(req, res) {
   var id = mess.id;
   var action = mess.action;
   var at = mess.at;
+  var href = mess.href;
 
   switch(type) {
     case "user":
@@ -72,7 +73,7 @@ function receivedNotification(req, res) {
     Fitness.update({uid: ownerId, id: id}, {changed: true}).exec(function(err, u) {
       if (err) { sails.log.error(err); }
       if (u.length==0) {
-        Fitness.create({uid: ownerId, id: id, changed: true}).exec(function(err) {
+        Fitness.create({uid: ownerId, id: id, changed: true, href: href}).exec(function(err) {
         if (err) { sails.log.error(err); }
         });
       }
