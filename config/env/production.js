@@ -6,10 +6,11 @@ module.exports = {
     connection: {
         localDiskDb: {
             adapter: 'sails-postgresql',
-            host: process.env.POSTGRES_HOST,
-            user: process.env.POSTGRES_USER,
-            password: process.env.POSTGRES_PASS,
-            database: process.env.POSTGRES_DB
+            url: process.env.DATABASE_URL
+            // host: process.env.POSTGRES_HOST,
+            // user: process.env.POSTGRES_USER,
+            // password: process.env.POSTGRES_PASS,
+            // database: process.env.POSTGRES_DB
         }
     }
 };
