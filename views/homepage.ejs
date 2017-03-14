@@ -22,11 +22,9 @@
         <h5>https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date</h5>
         <div id="fitness-info">
           <div><%= JSON.stringify(fitness, null, 2) %></div>
-          <% if (fitness.changed) { %>
           <div><a href="/resource/pullFitness?date=<% var d = new Date(); var d_str = d.getFullYear() + '-'
               + ('0' + (d.getMonth()+1)).slice(-2) + '-'
               + ('0' + d.getDate()).slice(-2);%><%= d_str %>">Sync fitness</a></div>
-          <% } %>
         </div>
       </div>
     </div>
