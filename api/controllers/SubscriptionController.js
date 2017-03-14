@@ -47,7 +47,7 @@ function subscriptionConfirmation(req, res) {
 
 function receivedNotification(req, res) {
   sails.log.info(req.body);
-  var mess = req.body.Message;
+  var mess = JSON.parse(req.body.Message);
   var type = mess.type;
   var ownerId = mess.ownerId;
   var id = mess.id;
