@@ -38,22 +38,27 @@ module.exports.routes = {
       sails.log.info('Found UID in session: ' + uid);
       User.findOne({uid: uid}).exec(function (err, u) {
         if (err) {
+          sails.log.error(err);
           res.json(502, {
             error: err
           })
         } else {
+          sails.log.info(u);
           Fitness.find({uid: uid}).exec(function (err, f) {
             if (err) {
+              sails.log.error(err);
               res.json(502, {
                 error: err
               })
             } else {
+              sails.log.info(f);
               res.view('homepage', {user: u, fitness: f});
             }
           })
         }
       });
     } else {
+      sails.log.info('UID not found');
       res.view('homepage', {user: null, fitness: null});
     }
   }
