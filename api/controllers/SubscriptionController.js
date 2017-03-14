@@ -7,11 +7,11 @@ var request = require('request');
 
 module.exports = {
     index: function (req, res) {
-        sails.log.debug(">>> Index");
+        sails.log.info(">>> Index");
     },
     endpoint: function (req, res) {
         var type = req.body.Type;
-        sails.log.debug(">>> Message type:" + type);
+        sails.log.info(">>> Message type:" + type);
         switch (type) {
             case Constant.SNS_MESSAGE_TYPE.SUBSCRIPTION_CONFIRMATION:
                 subscriptionConfirmation(req, res);
@@ -24,7 +24,7 @@ module.exports = {
 };
 
 function subscriptionConfirmation(req, res) {
-    sails.log.debug(">>> Received message successfully");
+    sails.log.info(">>> Received message successfully");
 
     var subscribeURL = req.body.SubscribeURL;
     var options = {
@@ -32,13 +32,13 @@ function subscriptionConfirmation(req, res) {
         headers: {verify_token: req.body.Token}
     };
 
-    sails.log.debug(">>> Replying to " + subscribeURL);
+    sails.log.info(">>> Replying to " + subscribeURL);
     request.get(options, function (err, response, body) {
             if (err) {
                 return res.status(500).json(err.message);
             }
 
-            sails.log.debug(body);
+            sails.log.info(body);
             return res.status(200).json({});
         }
     );
@@ -46,7 +46,7 @@ function subscriptionConfirmation(req, res) {
 }
 
 function receivedNotification(req, res) {
-  sails.log.debug(req.body);
+  sails.log.info(req.body);
   var mess = req.body.Message;
   var type = mess.type;
   var ownerId = mess.ownerId;
