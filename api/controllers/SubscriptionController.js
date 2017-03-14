@@ -72,7 +72,7 @@ function receivedNotification(req, res) {
     Fitness.update({uid: ownerId, id: id}, {changed: true}).exec(function(err, u) {
       if (err) { sails.log.error(err); }
       if (u.length==0) {
-        Fitness.create({uid: id, id: id, changed: true}).exec(function(err) {
+        Fitness.create({uid: ownerId, id: id, changed: true}).exec(function(err) {
         if (err) { sails.log.error(err); }
         });
       }
