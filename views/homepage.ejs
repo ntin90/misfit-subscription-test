@@ -1,48 +1,220 @@
-<head>
-  <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
-</head>
-<body>
-<div><h1>Homepage</h1></div>
-<% if (user) { %>
-  <div><a href="/auth/logout">Logout</a></div>
-  <div>
-      <h3>User Info</h3>
-      <h5>https://openapi-portfolio-int.linkplatforms.com/v1/user/me</h5>
-      <div id="user-info">
-        <div><%= JSON.stringify(user, null, 2) %></div>
-        <% if (user.changed) { %>
-        <div><a href="/resource/pullUser">Sync user</a></div>
-        <% } %>
-      </div>
-  </div>
-
-  <% if (fitness) { %>
-    <div>
-        <h3>Fitness Info</h3>
-        <h5>https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date</h5>
-        <div id="fitness-info">
-          <div><%= JSON.stringify(fitness, null, 2) %></div>
-          <div><a href="/resource/pullFitness?date=<% var d = new Date(); var d_str = d.getFullYear() + '-'
-              + ('0' + (d.getMonth()+1)).slice(-2) + '-'
-              + ('0' + d.getDate()).slice(-2);%><%= d_str %>">Sync fitness</a></div>
+<% if (!user) { %>
+<body class="app flex-row align-items-center">
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card-group mb-0">
+        <div class="card card-inverse card-primary py-5 d-md-down-none" style="width:44%">
+          <div class="card-block text-center">
+            <div>
+              <h2>OPEN API DEMO</h2>
+              <p>Sign In to your account</p>
+              <button type="button" class="btn btn-primary active mt-3">
+                <a href="/auth/misfit">Login with Misfit</a>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <script>
-        function reload() {
-          location.reload();
-        }
-        setTimeout(reload, 15000);
-    </script>
-  <% } %>
-
-<% } else {%>
-<div class="login-content">
-      <a href="/auth/misfit" class="btn-primary btn-lg">Login with Misfit</a>
   </div>
-<% } %>
+</div>
+</body>
+<% } else { %>
+
+<body>
+
+<header class="app-header navbar">
+  <button class="navbar-toggler mobile-sidebar-toggler d-lg-none" type="button">☰</button>
+  <!--<a class="navbar-brand" href="#"></a>-->
+  <ul class="nav navbar-nav d-md-down-none">
+    <li class="nav-item">
+      <a class="nav-link navbar-toggler sidebar-toggler" href="#">☰</a>
+    </li>
+
+    <li class="nav-item px-3">
+      <a class="nav-link" href="#">Dashboard</a>
+    </li>
+    <li class="nav-item px-3">
+      <a class="nav-link" href="#">Users</a>
+    </li>
+    <li class="nav-item px-3">
+      <a class="nav-link" href="#">Settings</a>
+    </li>
+  </ul>
+  <ul class="nav navbar-nav ml-auto">
+
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        <img src="img/avatars/6.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+        <span class="d-md-down-none">Admin</span>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right">
+        <div class="dropdown-header text-center">
+          <strong>Settings</strong>
+          <a class="dropdown-item" href="/auth/logout"><i class="fa fa-lock"></i> Logout</a>
+        </div>
+      </div>
+    </li>
+
+  </ul>
+</header>
+
+<div class="app-body">
+
+  <div class="sidebar">
+
+    <div id="nav-anchor"></div>
+
+    <nav class="sidebar-nav">
+      <ul class="nav">
+
+        <li class="nav-title">
+          Page
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#user-info"><i class="icon-star"></i> User Info</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#fitness-info"><i class="icon-star"></i> Fitness Info</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- Breadcrumb -->
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">Home</li>
+    </ol>
+
+    <div class="container-fluid">
+
+      <div class="animated fadeIn">
+
+        <div class="row" id="user-info">
+
+          <button type="button" class="btn btn-link"><i class="fa fa-link"></i>&nbsp;
+            <a href="https://openapi-portfolio-int.linkplatforms.com/v1/user/me">https://openapi-portfolio-int.linkplatforms.com/v1/user/me</a>
+          </button>
+
+          <% if (user.changed) { %>
+          <div class="col-sm-12">
+            <div class="alert alert-info">
+              <strong>Info!</strong> User Info has changed. <a href="/resource/pullUser" class="alert-link">Pull latest.</a>
+            </div>
+          </div>
+          <% } %>
+          <div class="col-sm-12">
+            <div class="card">
+              <div class="card-header">
+                <strong>User Info</strong>
+                <small>Form</small>
+              </div>
+              <div class="card-block">
+                <div class="form-group">
+                  <label for="company">UID</label>
+                  <input type="text" class="form-control" id="company" placeholder="<%=user.uid%>">
+                </div>
+
+                <div class="form-group">
+                  <label for="company">ID</label>
+                  <input type="text" class="form-control" id="company" placeholder="<%=user.id%>">
+                </div>
+
+                <div class="form-group">
+                  <label for="company">Last Token</label>
+                  <input type="text" class="form-control" id="company" placeholder="<%=user.last_token%>">
+                </div>
+
+                <div class="form-group">
+                  <label for="company">Created At</label>
+                  <input type="text" class="form-control" id="company" placeholder="<%=user.created_at%>">
+                </div>
+
+                <div class="form-group">
+                  <label for="company">Updated At</label>
+                  <input type="text" class="form-control" id="company" placeholder="<%=user.updated_at%>">
+                </div>
+
+                <div class="form-group">
+                  <label for="company">First Name</label>
+                  <input type="text" class="form-control" id="company" placeholder="<%=user.first_name%>">
+                </div>
+
+                <div class="form-group">
+                  <label for="company">Last Name</label>
+                  <input type="text" class="form-control" id="company" placeholder="<%=user.last_name%>">
+                </div>
+
+                <div class="form-group">
+                  <label for="company">Weight</label>
+                  <input type="text" class="form-control" id="company" placeholder="<%=user.weight%>">
+                </div>
+
+                <div class="form-group">
+                  <label for="company">Height</label>
+                  <input type="text" class="form-control" id="company" placeholder="<%=user.height%>">
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!--/.row-->
+
+
+        <% if (fitness) { %>
+        <div class="row" id="fitness-info">
+
+          <button type="button" class="btn btn-link"><i class="fa fa-link"></i>&nbsp;
+            <a href="https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date">https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date</a>
+          </button>
+
+          <div class="col-sm-12">
+            <div class="alert alert-info">
+              <strong>Info!</strong> Fitness Info has changed.
+              <a class="alert-link" href="/resource/pullFitness?date=<% var d = new Date(); var d_str = d.getFullYear() + '-'
+                + ('0' + (d.getMonth()+1)).slice(-2) + '-'
+                + ('0' + d.getDate()).slice(-2);%><%= d_str %>">Pull latest.</a>
+            </div>
+          </div>
+
+          <div class="col-sm-12">
+            <div class="card">
+              <div class="card-header">
+                <strong>Fitness Info</strong>
+                <small>Form</small>
+              </div>
+              <div class="card-block">
+                <div class="form-group">
+                  <label for="company">Raw Data</label>
+                  <input type="text" class="form-control" id="company" placeholder="<%= JSON.stringify(fitness, null, 2) %>">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+        <!--/.row-->
+      </div>
+    </div>
+    <!-- /.conainer-fluid -->
+  </main>
 
 
 
+
+</div>
+
+<footer class="app-footer">
+  <!--<a href="http://coreui.io">CoreUI</a> © 2017 creativeLabs.-->
+  <!--<span class="float-right">Powered by <a href="http://coreui.io">CoreUI</a>-->
+  </span>
+</footer>
 
 </body>
+
+<%}%>

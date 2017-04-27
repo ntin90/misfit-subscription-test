@@ -4,7 +4,7 @@ module.exports = {
       type: 'string',
       required: true
     },
-    
+
     first_name: {
       type: 'string'
     },
@@ -24,17 +24,25 @@ module.exports = {
     height: {
       type: 'float'
     },
-    
+
     last_token: {
       type: 'string'
     },
-    
+
     href: {
       type: 'string'
     },
-    
+
     changed: {
       type: 'boolean'
+    },
+
+    created_at: {
+      type: 'datetime'
+    },
+
+    updated_at: {
+      type: 'datetime'
     }
   }
 };
