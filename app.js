@@ -57,4 +57,4 @@ try {
 
 
 // Start server
-sails.lift(rc('sails'));
+sails.lift(rc('sails'), {hooks:{grunt:false}});
