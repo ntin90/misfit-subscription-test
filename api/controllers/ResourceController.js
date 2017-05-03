@@ -1,125 +1,96 @@
 var passport = require('passport');
-var request = require('request');
+var request = require('request-promise-native');
 
 
 module.exports = {
   pullUser: function (req, res) {
-    User.findOne({uid: req.session.me}).exec(function (err, user) {
-      var token = user.last_token;
-      sails.log.info("Use token: " +token);
-      request.get('https://openapi-portfolio-int.linkplatforms.com/v1/user/me',
-        {'auth': {'bearer': token}, 'json': true},
-        function (error, response, body) {
-          sails.log.info("Pull user "+user.uid+". Body: " + JSON.stringify(body));
-          if (!error && response.statusCode == 200) {
-            var uid = body.objectId;
-            User.update({uid: uid}, {
-              first_name: body.firstName,
-              last_name: body.lastName,
-              weight: body.weight,
-              height: body.height,
-              changed: false
-            }).exec(function (err, updated) {
-              if (err) {
-                res.json(502, {
-                  error: err
-                })
-              } else {
-                if (updated.length == 0) {
-                  User.create({
-                    uid: uid,
-                    first_name: body.firstName,
-                    last_name: body.lastName,
-                    weight: body.weightInGrams,
-                    height: body.heightInCentimeters,
-                    changed: false
-                  }).exec(function (err) {
-                    if (err) {
-                      res.json(502, {
-                        error: err
-                      })
-                    }
-                  });
-                }
-                res.redirect('/');
-              }
-            })
-          } else {
-            res.json(502, {
-              error: error,
-              body: body
-            });
-          }
-        }
-      );
-    });
+    let uid = req.session.me;
+    RequestService.getUserData(uid)
+      .then(function (user) {
+        return User.upsert(uid, user);
+      })
+      // Redirect to home
+      .then(function (record) {
+        res.json(200, {
+          record: record
+        })
+        //res.redirect('/');
+      })
+      .catch(function (err) {
+        res.json(502, {
+          error: err
+        })
+      })
   },
 
-  pullFitness: function (req, res)  {
-    var date = req.param('date');
-    User.findOne({uid: req.session.me}).exec(function (err, user) {
-      var token = user.last_token;
-      sails.log.info("Use token :" + token);
-      request.get('https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date/'+date,
-        { 'auth': { 'bearer': token}, 'json': true},
-        function (error, response, body) {
-          sails.log.info("Pull fitness "+date+" of user "+user.uid+". Body: " + JSON.stringify(body));
-          if (!error && response.statusCode == 200) {
-            var uid = body.owner;
-            Fitness.update({uid: uid, date: date}, {
-              steps: body.totalSteps,
-              changed: false
-            }).exec(function (err, updated) {
-              if (err) {
-                sails.log.error(err);
-                return res.json(502, {
-                  error: err
-                })
-              } else {
-                if (updated.length==0) {
-                  if (body.objectId) {
-                    Fitness.create({
-                      uid: uid,
-                      date: date,
-                      id: body.objectId,
-                      steps: body.totalSteps,
-                      changed: false
-                    }).exec(function (err) {
-                      if (err) {
-                        sails.log.error(err);
-                        return res.json(502, {
-                          error: err
-                        })
-                      }
-                    });
-                  }
-                }
-                return res.redirect('/');
-              }
-            });
-            Fitness.find({uid: uid, changed: true}).exec(function(err, f) {
-              f.forEach(function(e, i) {
-                request.get(e.href,
-                  { 'auth': { 'bearer': token}, 'json': true},
-                  function (error, response, body) {
-                    e.steps = body.totalSteps;
-                    e.save();
-                  }
-                );
-              });
-            });
-          } else {
-            sails.log.error(error);
-            return res.json(502, {
-              error: error,
-              body: body
-            });
-          }
-        }
-      );
+  pullFitness: function (req, res) {
+    let date = req.param('date');
+    let uid = req.session.me;
+
+    RequestService.getFitnessByDate(uid, date)
+      .then(function (fitness) {
+        return Fitness.upsert({uid: uid, date: date}, fitness);
+      })
+      .then(function (record) {
+        res.json(200, {
+          record: record
+        })
+      })
+      .catch(function (err) {
+        res.json(502, {
+          error: err
+        })
+      })
+
+    /*Fitness.find({uid: uid, changed: true}).exec(function (err, result) {
+     result.forEach(function (e, i) {
+     request.get(e.href,
+     {'auth': {'bearer': token}, 'json': true},
+     function (error, response, body) {
+     e.totalSteps = body.totalSteps;
+     e.save();
+     }
+     );
+     });
+     });*/
+  },
+
+  pullMultipleFitness: function (req, res) {
+    let startDate = req.param('startDate');
+    let endDate = req.param('endDate');
+    let uid = req.session.me;
+    RequestService.getMultipleFitness(uid, startDate, endDate)
+      .then(function (records) {
+        let promises = records.map((item) => Fitness.upsert({uid: uid, date: item.date}, item));
+        return Promise.all(promises);
+      })
+      .then(function (records) {
+        res.json(200, {
+          records: records
+        })
+      })
+      .catch(function (err) {
+        res.json(502, {
+          error: err
+        })
+      });
+  },
+
+  subscribe: function (req, res) {
+    if (!req.isSocket) {
+      return res.badRequest();
+    }
+    let uid = req.session.me;
+    sails.sockets.join(req, uid, function (err) {
+      if (err) {
+        sails.log.error(err);
+        return res.serverError(err);
+      }
+
+      sails.log.info('Subscribed to a room called ' + uid + '!');
+      return res.json({
+        message: 'Subscribed to a room called ' + uid + '!'
+      });
     });
-
-
-    // res.redirect('/resource/show');
   }
 };

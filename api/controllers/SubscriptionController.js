@@ -6,78 +6,71 @@ var request = require('request');
 
 
 module.exports = {
-    index: function (req, res) {
-        sails.log.info(">>> Index");
-    },
-    endpoint: function (req, res) {
-        var type = req.body.Type;
-        sails.log.info(">>> Message type:" + type);
-        switch (type) {
-            case Constant.SNS_MESSAGE_TYPE.SUBSCRIPTION_CONFIRMATION:
-                subscriptionConfirmation(req, res);
-                break;
-            case Constant.SNS_MESSAGE_TYPE.NOTIFICATION:
-                receivedNotification(req, res);
-                break;
-        }
+  index: function (req, res) {
+    sails.log.info(">>> Index");
+  },
+  endpoint: function (req, res) {
+    var type = req.body.Type;
+    sails.log.info(">>> Message type:" + type);
+    switch (type) {
+      case Constant.SNS_MESSAGE_TYPE.SUBSCRIPTION_CONFIRMATION:
+        subscriptionConfirmation(req, res);
+        break;
+      case Constant.SNS_MESSAGE_TYPE.NOTIFICATION:
+        receivedNotification(req, res);
+        break;
     }
+  }
 };
 
 function subscriptionConfirmation(req, res) {
-    sails.log.info(">>> Received message successfully");
+  sails.log.info(">>> Received message successfully");
 
-    var subscribeURL = req.body.SubscribeURL;
-    var options = {
-        url: subscribeURL,
-        headers: {verify_token: req.body.Token}
-    };
+  var subscribeURL = req.body.SubscribeURL;
+  var options = {
+    url: subscribeURL,
+    headers: {verify_token: req.body.Token}
+  };
 
-    sails.log.info(">>> Replying to " + subscribeURL);
-    request.get(options, function (err, response, body) {
-            if (err) {
-                return res.status(500).json(err.message);
-            }
+  sails.log.info(">>> Replying to " + subscribeURL);
+  request.get(options, function (err, response, body) {
+      if (err) {
+        return res.status(500).json(err.message);
+      }
 
-            sails.log.info(body);
-            return res.status(200).json({});
-        }
-    );
+      sails.log.info(body);
+      return res.status(200).json({});
+    }
+  );
 
 }
 
 function receivedNotification(req, res) {
   sails.log.info(req.body);
-  var mess = JSON.parse(req.body.Message);
-  var type = mess.type;
-  var ownerId = mess.ownerId;
-  var id = mess.id;
-  var action = mess.action;
-  var at = mess.at;
-  var href = mess.href;
+  let mess = JSON.parse(req.body.Message);
+  let type = mess.type;
+  let uid = mess.ownerId;
+  let id = mess.id;
+  let action = mess.action;
+  let at = mess.at;
+  let href = mess.href;
 
-  switch(type) {
+  switch (type) {
     case "user":
-      User.update({uid: id}, {changed: true}).exec(function(err, u) {
-        if (err) { sails.log.error(err); }
-        else {
-          sails.log.info(u);
-          if (u.length == 0) {
-            User.create({uid: id, changed: true}).exec(function (err) {
-              if (err) { sails.log.error(err); }
-            })
-          }
-        }
-      });
+      RequestService.getUserData(uid)
+        .then(function (userInfo) {
+          User.upsert({uid: uid}, userInfo);
+          sails.log.info('BROADCAST to ' + uid);
+          sails.sockets.broadcast(uid, 'user', userInfo)
+        });
       break;
     case "activity_day_summary":
-    Fitness.update({uid: ownerId, id: id}, {changed: true}).exec(function(err, u) {
-      if (err) { sails.log.error(err); }
-      if (u.length==0) {
-        Fitness.create({uid: ownerId, id: id, changed: true, href: href}).exec(function(err) {
-        if (err) { sails.log.error(err); }
+      RequestService.getFitness(uid, href)
+        .then(function (fitnessInfo) {
+          User.upsert({uid: uid, date: fitnessInfo.date}, fitnessInfo);
+          sails.log.info('BROADCAST to ' + uid);
+          sails.sockets.broadcast(uid, 'activity_day_summary', fitnessInfo)
         });
-      }
-      });
       break;
     default:
       break;
