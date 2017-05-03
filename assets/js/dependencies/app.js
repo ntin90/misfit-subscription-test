@@ -131,7 +131,7 @@ $(document).on('click', '.card-actions a', function(e){
 
 });
 
-function capitalizeFirstLetter(string) {
+function capitalizeFirstvarter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -152,9 +152,9 @@ function reload() {
 }
 
 function buildChart(data) {
-  let myChart = echarts.init(document.getElementById('fitness-chart'));
+  var myChart = echarts.init(document.getElementById('fitness-chart'));
 
-  let option = {
+  var option = {
     title: {
       text: 'Steps'
     },
@@ -206,7 +206,7 @@ if (USER_ID && USER_ID != 'undefined') {
       reload()
     });
 
-  let fitnesses = FITNESS.map((item) => {return {name: Date.parse(item.date).toString(), value: [item.date, item.totalSteps]}});
+  var fitnesses = FITNESS.map((item) => {return {name: Date.parse(item.date).toString(), value: [item.date, item.totalSteps]}});
   buildChart(fitnesses);
 
 }
