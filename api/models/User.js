@@ -5,6 +5,10 @@ module.exports = {
       required: true
     },
 
+    username: {
+      type: 'string'
+    },
+
     first_name: {
       type: 'string'
     },
@@ -13,8 +17,20 @@ module.exports = {
       type: 'string'
     },
 
+    profile_picture: {
+      type: 'string'
+    },
+
+    birthday: {
+      type: 'string'
+    },
+
+    gender: {
+      type: 'string'
+    },
+
     email: {
-      type: 'float'
+      type: 'string'
     },
 
     weight: {
@@ -44,5 +60,22 @@ module.exports = {
     updated_at: {
       type: 'datetime'
     }
+  },
+
+  getToken: function (uid) {
+    return User.findOne({uid: uid})
+    // Get user info
+      .then(function (user) {
+        if (!user)
+          return Promise.reject('User not found');
+        else {
+          sails.log.info("Use token :" + user.last_token);
+          return Promise.resolve(user.last_token);
+        }
+      });
+  },
+
+  upsert: function (query, data) {
+    return UpsertService.upsert(User, query, data)
   }
 };
