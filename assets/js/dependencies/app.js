@@ -150,5 +150,64 @@ function init(url) {
 function reload() {
   location.reload();
 }
-setTimeout(reload, 15000);
+
+function buildChart(data) {
+  let myChart = echarts.init(document.getElementById('fitness-chart'));
+
+  let option = {
+    title: {
+      text: 'Steps'
+    },
+    tooltip: {
+      trigger: 'axis',
+      formatter: function (params) {
+        params = params[0];
+        return params.value[0] + ' : ' + params.value[1];
+      },
+      axisPointer: {
+        animation: false
+      }
+    },
+    xAxis: {
+      type: 'time',
+      splitLine: {
+        show: false
+      }
+    },
+    yAxis: {
+      type: 'value',
+    },
+    series: [{
+      name: 'steps',
+      type: 'line',
+      data: data
+    }]
+  };
+
+  console.log(option);
+
+  myChart.setOption(option);
+}
+
+if (USER_ID && USER_ID != 'undefined') {
+  console.log(USER_ID);
+  console.log(FITNESS);
+    io.socket.get('/resource/subscribe', function (data) {
+      console.log('Socket Join!!!', data);
+    });
+
+    io.socket.on('user', function onServerSentEvent(msg) {
+      console.log('Socket Join!!!', msg);
+      reload();
+    });
+
+    io.socket.on('activity_day_summary', function onServerSentEvent(msg) {
+      console.log('Socket Join!!!', msg);
+      reload()
+    });
+
+  let fitnesses = FITNESS.map((item) => {return {name: Date.parse(item.date).toString(), value: [item.date, item.totalSteps]}});
+  buildChart(fitnesses);
+
+}
 

@@ -19,6 +19,10 @@
     </div>
   </div>
 </div>
+<script>
+  var USER_ID = null;
+</script>
+
 </body>
 <% } else { %>
 
@@ -45,7 +49,8 @@
   <ul class="nav navbar-nav ml-auto">
 
     <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+      <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+         aria-expanded="false">
         <img src="img/avatars/6.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
         <span class="d-md-down-none">Admin</span>
       </a>
@@ -97,13 +102,14 @@
         <div class="row" id="user-info">
 
           <button type="button" class="btn btn-link"><i class="fa fa-link"></i>&nbsp;
-            <a href="https://openapi-portfolio-int.linkplatforms.com/v1/user/me">https://openapi-portfolio-int.linkplatforms.com/v1/user/me</a>
+            <a href="">https://openapi-portfolio-int.linkplatforms.com/v1/user/me</a>
           </button>
 
           <% if (user.changed) { %>
           <div class="col-sm-12">
             <div class="alert alert-info">
-              <strong>Info!</strong> User Info has changed. <a href="/resource/pullUser" class="alert-link">Pull latest.</a>
+              <strong>Info!</strong> User Info has changed. <a href="/resource/pullUser" class="alert-link">Pull
+                latest.</a>
             </div>
           </div>
           <% } %>
@@ -111,53 +117,47 @@
             <div class="card">
               <div class="card-header">
                 <strong>User Info</strong>
-                <small>Form</small>
               </div>
               <div class="card-block">
-                <div class="form-group">
-                  <label for="company">UID</label>
-                  <input type="text" class="form-control" id="company" placeholder="<%=user.uid%>">
-                </div>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Field</th>
+                      <th>Data</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <th scope="row">UID</th>
+                    <td><%= user.uid %></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Id</th>
+                    <td><%= user.id %></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Token</th>
+                    <td><%= user.last_token %></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">First name</th>
+                    <td><%= user.first_name %></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Last name</th>
+                    <td><%= user.last_name %></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Weight</th>
+                    <td><%= user.weight %></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Height</th>
+                    <td><%= user.height %></td>
+                  </tr>
+                  </tbody>
+                </table>
 
-                <div class="form-group">
-                  <label for="company">ID</label>
-                  <input type="text" class="form-control" id="company" placeholder="<%=user.id%>">
-                </div>
-
-                <div class="form-group">
-                  <label for="company">Last Token</label>
-                  <input type="text" class="form-control" id="company" placeholder="<%=user.last_token%>">
-                </div>
-
-                <div class="form-group">
-                  <label for="company">Created At</label>
-                  <input type="text" class="form-control" id="company" placeholder="<%=user.created_at%>">
-                </div>
-
-                <div class="form-group">
-                  <label for="company">Updated At</label>
-                  <input type="text" class="form-control" id="company" placeholder="<%=user.updated_at%>">
-                </div>
-
-                <div class="form-group">
-                  <label for="company">First Name</label>
-                  <input type="text" class="form-control" id="company" placeholder="<%=user.first_name%>">
-                </div>
-
-                <div class="form-group">
-                  <label for="company">Last Name</label>
-                  <input type="text" class="form-control" id="company" placeholder="<%=user.last_name%>">
-                </div>
-
-                <div class="form-group">
-                  <label for="company">Weight</label>
-                  <input type="text" class="form-control" id="company" placeholder="<%=user.weight%>">
-                </div>
-
-                <div class="form-group">
-                  <label for="company">Height</label>
-                  <input type="text" class="form-control" id="company" placeholder="<%=user.height%>">
-                </div>
               </div>
             </div>
 
@@ -165,33 +165,28 @@
         </div>
         <!--/.row-->
 
-
         <% if (fitness) { %>
         <div class="row" id="fitness-info">
-
           <button type="button" class="btn btn-link"><i class="fa fa-link"></i>&nbsp;
-            <a href="https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date">https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date</a>
+            <a href="">https://openapi-portfolio-int.linkplatforms.com/v1/fitness/summaries/date</a>
           </button>
-
-          <div class="col-sm-12">
+        <!--  <div class="col-sm-12">
             <div class="alert alert-info">
               <strong>Info!</strong> Fitness Info has changed.
-              <a class="alert-link" href="/resource/pullFitness?date=<% var d = new Date(); var d_str = d.getFullYear() + '-'
-                + ('0' + (d.getMonth()+1)).slice(-2) + '-'
-                + ('0' + d.getDate()).slice(-2);%><%= d_str %>">Pull latest.</a>
+              <a class="alert-link"
+                 href="/resource/pullFitness?date=<% var d = new Date(); var d_str = d.getFullYear() + '-'
+                   + ('0' + (d.getMonth() + 1)).slice(-2) + '-'
+                   + ('0' + d.getDate()).slice(-2); %> <%= d_str %>">Pull latest.</a>
             </div>
           </div>
-
+        -->
           <div class="col-sm-12">
             <div class="card">
               <div class="card-header">
                 <strong>Fitness Info</strong>
-                <small>Form</small>
               </div>
               <div class="card-block">
-                <div class="form-group">
-                  <label for="company">Raw Data</label>
-                  <input type="text" class="form-control" id="company" placeholder="<%= JSON.stringify(fitness, null, 2) %>">
+                <div id="fitness-chart"   style="width: 100%; min-height: 400px">
                 </div>
               </div>
             </div>
@@ -205,8 +200,6 @@
   </main>
 
 
-
-
 </div>
 
 <footer class="app-footer">
@@ -214,7 +207,10 @@
   <!--<span class="float-right">Powered by <a href="http://coreui.io">CoreUI</a>-->
   </span>
 </footer>
+<script>
+  var USER_ID = "<%= user.uid %>";
+  var FITNESS = JSON.parse(_.unescape("<%= JSON.stringify(fitness) %>"));
+</script>
 
 </body>
-
-<%}%>
+<% } %>
