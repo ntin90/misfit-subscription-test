@@ -23,38 +23,34 @@
 module.exports.routes = {
 
   /***************************************************************************
-  *                                                                          *
-  * Make the view located at `views/homepage.ejs` (or `views/homepage.jade`, *
-  * etc. depending on your default view engine) your home page.              *
-  *                                                                          *
-  * (Alternatively, remove this and add an `index.html` file in your         *
-  * `assets` directory)                                                      *
-  *                                                                          *
-  ***************************************************************************/
+   *                                                                          *
+   * Make the view located at `views/homepage.ejs` (or `views/homepage.jade`, *
+   * etc. depending on your default view engine) your home page.              *
+   *                                                                          *
+   * (Alternatively, remove this and add an `index.html` file in your         *
+   * `assets` directory)                                                      *
+   *                                                                          *
+   ***************************************************************************/
 
   '/': function (req, res) {
     var uid = req.session.me;
     sails.log.info(req.session);
     if (uid) {
+      var user, fitness;
       sails.log.info('Found UID in session: ' + uid);
-      User.findOne({uid: uid}).exec(function (err, u) {
+      User.findOne({uid: uid})
+        .then(function (result) {
+          user = result;
+          sails.log.info(user);
+          return Fitness.find({where: {uid: uid}, sort: 'date ASC'})
+        }).then(function (result) {
+        fitness = result;
+        res.view('homepage', {user: user, fitness: fitness});
+      }).catch(function (err) {
         if (err) {
           sails.log.error(err);
           res.json(502, {
             error: err
-          })
-        } else {
-          sails.log.info(u);
-          Fitness.find({uid: uid}).exec(function (err, f) {
-            if (err) {
-              sails.log.error(err);
-              res.json(502, {
-                error: err
-              })
-            } else {
-              sails.log.info(f);
-              res.view('homepage', {user: u, fitness: f});
-            }
           })
         }
       });
@@ -65,13 +61,13 @@ module.exports.routes = {
   }
 
   /***************************************************************************
-  *                                                                          *
-  * Custom routes here...                                                    *
-  *                                                                          *
-  * If a request to a URL doesn't match any of the custom routes above, it   *
-  * is matched against Sails route blueprints. See `config/blueprints.js`    *
-  * for configuration options and examples.                                  *
-  *                                                                          *
-  ***************************************************************************/
+   *                                                                          *
+   * Custom routes here...                                                    *
+   *                                                                          *
+   * If a request to a URL doesn't match any of the custom routes above, it   *
+   * is matched against Sails route blueprints. See `config/blueprints.js`    *
+   * for configuration options and examples.                                  *
+   *                                                                          *
+   ***************************************************************************/
 
 };
