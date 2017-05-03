@@ -67,7 +67,7 @@ function receivedNotification(req, res) {
     case "activity_day_summary":
       RequestService.getFitness(uid, href)
         .then(function (fitnessInfo) {
-          User.upsert({uid: uid, date: fitnessInfo.date}, fitnessInfo);
+          Fitness.upsert({uid: uid, date: fitnessInfo.date}, fitnessInfo);
           sails.log.info('BROADCAST to ' + uid);
           sails.sockets.broadcast(uid, 'activity_day_summary', fitnessInfo)
         });
