@@ -9,12 +9,10 @@ module.exports = {
       .then(function (user) {
         return User.upsert(uid, user);
       })
-      // Redirect to home
       .then(function (record) {
         res.json(200, {
           record: record
         })
-        //res.redirect('/');
       })
       .catch(function (err) {
         res.json(502, {
@@ -40,19 +38,7 @@ module.exports = {
         res.json(502, {
           error: err
         })
-      })
-
-    /*Fitness.find({uid: uid, changed: true}).exec(function (err, result) {
-     result.forEach(function (e, i) {
-     request.get(e.href,
-     {'auth': {'bearer': token}, 'json': true},
-     function (error, response, body) {
-     e.totalSteps = body.totalSteps;
-     e.save();
-     }
-     );
-     });
-     });*/
+      });
   },
 
   pullMultipleFitness: function (req, res) {
@@ -61,6 +47,7 @@ module.exports = {
     let uid = req.session.me;
     RequestService.getMultipleFitness(uid, startDate, endDate)
       .then(function (records) {
+        // Multiple upsert - sequentially
         let promises = records.map((item) => Fitness.upsert({uid: uid, date: item.date}, item));
         return Promise.all(promises);
       })
@@ -76,6 +63,7 @@ module.exports = {
       });
   },
 
+  // Subscribe to receive new user's data update
   subscribe: function (req, res) {
     if (!req.isSocket) {
       return res.badRequest();

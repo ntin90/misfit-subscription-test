@@ -60,6 +60,7 @@ function receivedNotification(req, res) {
       RequestService.getUserData(uid)
         .then(function (userInfo) {
           User.upsert({uid: uid}, userInfo);
+          // Notifiy user when new data received
           sails.log.info('BROADCAST to ' + uid);
           sails.sockets.broadcast(uid, 'user', userInfo)
         });

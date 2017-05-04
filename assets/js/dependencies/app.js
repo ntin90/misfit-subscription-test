@@ -190,19 +190,17 @@ function buildChart(data) {
 }
 
 if (USER_ID && USER_ID != 'undefined') {
-  console.log(USER_ID);
-  console.log(FITNESS);
     io.socket.get('/resource/subscribe', function (data) {
       console.log('Socket Join!!!', data);
     });
 
     io.socket.on('user', function onServerSentEvent(msg) {
-      console.log('Socket Join!!!', msg);
+      console.log('Socket Data Received!!!', msg);
       reload();
     });
 
     io.socket.on('activity_day_summary', function onServerSentEvent(msg) {
-      console.log('Socket Join!!!', msg);
+      console.log('Socket Data Received!!!', msg);
       reload()
     });
 

@@ -42,27 +42,31 @@ module.exports = {
     };
 
     request(requestOption)
+      // Get user
       .then(function (body) {
         let accessToken = body.access_token;
         let token_type = body.token_type;
           return RequestService.getUserByToken(accessToken)
       })
+      // Set session and save user data
       .then(function(userInfo){
         console.log(userInfo);
         req.session.me = userInfo.uid;
         req.session.authenticated = true;
         return User.upsert({uid: userInfo.uid}, userInfo);
       })
+      // Fetch recent fitness daily summary
       .then(function (user) {
         let endDate = moment().format('YYYY-MM-DD');
         let startDate = moment().subtract(20, 'days').format('YYYY-MM-DD');
-        console.log('aaaa',startDate, endDate);
         return RequestService.getMultipleFitness(user.uid, startDate, endDate);
       })
+      // Save recent fitness daily summary
       .then(function (records) {
         let  promises = records.map((item) => Fitness.upsert({uid: item.uid, date: item.date}, item));
         return Promise.all(promises);
       })
+      // Redirect to home
       .then(function (fitnesses){
         res.redirect('/');
       })

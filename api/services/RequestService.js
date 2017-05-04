@@ -37,11 +37,13 @@ module.exports = {
       })
   },
 
+  // Get fitness daily summary by date
   getFitnessByDate: function(uid, date){
     let url = `${this.apiEndPoint.fitness}/${date}`;
     return this.getFitness(uid, url);
   },
 
+  // Get fitness daily summary by url
   getFitness: function(uid, url){
     return User.getToken(uid)
     // Get user's fitness info
@@ -58,6 +60,8 @@ module.exports = {
         return Promise.resolve(fitness)
       });
   },
+
+  // Get fitness daily summary in a date range
   getMultipleFitness: function (uid, startDate, endDate) {
     let url = `${this.apiEndPoint.fitness}?startDate=${startDate}&endDate=${endDate}`;
     return User.getToken(uid)
@@ -79,8 +83,9 @@ module.exports = {
       });
 
   }
-}
+};
 
+// Parse response to internal object
 const ResponseParser = {
 
     parseFitnessResponse: function (body) {

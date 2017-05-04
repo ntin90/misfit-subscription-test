@@ -1,4 +1,5 @@
 module.exports = {
+  // Upsert a record, by model and query condition
   upsert: function (model, query, data) {
     return model.update(query, data)
       .then(function (records) {
