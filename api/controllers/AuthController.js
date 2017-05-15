@@ -57,17 +57,33 @@ module.exports = {
       })
       // Fetch recent fitness daily summary
       .then(function (user) {
-        let endDate = moment().format('YYYY-MM-DD');
-        let startDate = moment().subtract(20, 'days').format('YYYY-MM-DD');
-        return RequestService.getMultipleFitness(user.uid, startDate, endDate);
+          let endDate = moment().format('YYYY-MM-DD');
+          let startDate = moment().subtract(20, 'days').format('YYYY-MM-DD');
+          let getFitnessPromise = RequestService.getMultipleFitness(user.uid, startDate, endDate);
+          let getSleepPromise = RequestService.getMultipleSleep(user.uid, startDate, endDate);
+          let getDevicePromise = RequestService.getMultipleDevice(user.uid);
+          console.log('Auth 1');
+          return Promise.all([getFitnessPromise, getSleepPromise, getDevicePromise]);
+
       })
-      // Save recent fitness daily summary
-      .then(function (records) {
-        let  promises = records.map((item) => Fitness.upsert({uid: item.uid, date: item.date}, item));
-        return Promise.all(promises);
+      // Save recent data
+      .then(function (values) {
+        try {
+          console.log(values);
+          let fitnessUpsertPromises = values[0].map((item) => Fitness.upsert({uid: item.uid, date: item.date}, item));
+          let sleepUpsertPromises = values[1].map((item) => Sleep.upsert({uid: item.uid, date: item.date}, item));
+          let deviceUpsertPromises = values[2].map((item) => Device.upsert({
+            uid: item.uid,
+            device_id: item.device_id
+          }, item));
+          return Promise.all(fitnessUpsertPromises.concat(sleepUpsertPromises).concat(deviceUpsertPromises));
+        }
+        catch (error){
+          console.log(error);
+        }
       })
       // Redirect to home
-      .then(function (fitnesses){
+      .then(function (result){
         res.redirect('/');
       })
       .catch(

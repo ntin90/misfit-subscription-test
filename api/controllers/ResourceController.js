@@ -63,6 +63,88 @@ module.exports = {
       });
   },
 
+  pullSleep: function (req, res) {
+    let date = req.param('date');
+    let uid = req.session.me;
+
+    RequestService.getSleepByDate(uid, date)
+      .then(function (sleep) {
+        return Sleep.upsert({uid: uid, date: date}, sleep);
+      })
+      .then(function (record) {
+        res.json(200, {
+          record: record
+        })
+      })
+      .catch(function (err) {
+        res.json(502, {
+          error: err
+        })
+      });
+  },
+
+  pullMultipleSleep: function (req, res) {
+    let startDate = req.param('startDate');
+    let endDate = req.param('endDate');
+    let uid = req.session.me;
+    RequestService.getMultipleSleep(uid, startDate, endDate)
+      .then(function (records) {
+        // Multiple upsert - sequentially
+        let promises = records.map((item) => Sleep.upsert({uid: uid, date: item.date}, item));
+        return Promise.all(promises);
+      })
+      .then(function (records) {
+        res.json(200, {
+          records: records
+        })
+      })
+      .catch(function (err) {
+        res.json(502, {
+          error: err
+        })
+      });
+  },
+
+
+  pullDevice: function (req, res) {
+    let deviceId = req.param('deviceId');
+    let uid = req.session.me;
+
+    RequestService.getDeviceById(uid, deviceId)
+      .then(function (device) {
+        return Sleep.upsert({uid: uid, device_id: deviceId}, device);
+      })
+      .then(function (record) {
+        res.json(200, {
+          record: record
+        })
+      })
+      .catch(function (err) {
+        res.json(502, {
+          error: err
+        })
+      });
+  },
+
+  pullMultipleDevice: function (req, res) {
+    let uid = req.session.me;
+    RequestService.getMultipleDevice(uid)
+      .then(function (records) {
+        // Multiple upsert - sequentially
+        let promises = records.map((item) => Device.upsert({uid: uid, date: item.date}, item));
+        return Promise.all(promises);
+      })
+      .then(function (records) {
+        res.json(200, {
+          records: records
+        })
+      })
+      .catch(function (err) {
+        res.json(502, {
+          error: err
+        })
+      });
+  },
   // Subscribe to receive new user's data update
   subscribe: function (req, res) {
     if (!req.isSocket) {

@@ -73,6 +73,9 @@
         <li class="nav-item">
           <a class="nav-link" href="#fitness-info"><i class="icon-star"></i> Fitness Info</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#sleep-info"><i class="icon-star"></i> Fitness Info</a>
+        </li>
       </ul>
     </nav>
   </div>
@@ -95,14 +98,6 @@
             <a href="">https://openapi-portfolio-int.linkplatforms.com/v1/user/me</a>
           </button>
 
-          <% if (user.changed) { %>
-          <div class="col-sm-12">
-            <div class="alert alert-info">
-              <strong>Info!</strong> User Info has changed. <a href="/resource/pullUser" class="alert-link">Pull
-                latest.</a>
-            </div>
-          </div>
-          <% } %>
           <div class="col-sm-12">
             <div class="card">
               <div class="card-header">
@@ -183,6 +178,25 @@
           </div>
         </div>
         <% } %>
+
+        <% if (sleep) { %>
+        <div class="row" id="sleep-info">
+          <button type="button" class="btn btn-link"><i class="fa fa-link"></i>&nbsp;
+            <a href="">https://openapi-portfolio-int.linkplatforms.com/v1//night/sleep/summaries/date</a>
+          </button>
+          <div class="col-sm-12">
+            <div class="card">
+              <div class="card-header">
+                <strong>Sleep Info</strong>
+              </div>
+              <div class="card-block">
+                <div id="sleep-chart"   style="width: 100%; min-height: 400px">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
         <!--/.row-->
       </div>
     </div>
@@ -200,6 +214,8 @@
 <script>
   var USER_ID = "<%= user.uid %>";
   var FITNESS = JSON.parse(_.unescape("<%= JSON.stringify(fitness) %>"));
+  var SLEEP = JSON.parse(_.unescape("<%= JSON.stringify(sleep) %>"));
+
 </script>
 
 </body>

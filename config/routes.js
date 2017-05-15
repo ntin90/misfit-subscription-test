@@ -42,18 +42,23 @@ module.exports.routes = {
         .then(function (result) {
           user = result;
           sails.log.info(user);
-          return Fitness.find({where: {uid: uid}, sort: 'date ASC'})
-        }).then(function (result) {
-        fitness = result;
-        res.view('homepage', {user: user, fitness: fitness});
-      }).catch(function (err) {
-        if (err) {
-          sails.log.error(err);
-          res.json(502, {
-            error: err
-          })
-        }
-      });
+          let fitnessPromise = Fitness.find({where: {uid: uid}, sort: 'date ASC'});
+          let sleepPromise = Sleep.find({where: {uid: uid}, sort: 'date ASC'});
+          let devicePromise = Device.find({where: {uid: uid}});
+          return Promise.all([fitnessPromise, sleepPromise, devicePromise]);
+        })
+        .then(function (values) {
+          console.log(values);
+          res.view('homepage', {user: user, fitness: values[0], sleep: values[1], device: values[2]});
+        })
+        .catch(function (err) {
+          if (err) {
+            sails.log.error(err);
+            res.json(502, {
+              error: err
+            })
+          }
+        });
     } else {
       sails.log.info('UID not found');
       res.view('homepage', {user: null, fitness: null});
