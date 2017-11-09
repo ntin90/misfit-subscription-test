@@ -1,0 +1,12 @@
+<div class="login-content">
+  <% if (debug == "true") { %>
+  <form action="/auth/callback" method="get">
+    <label for="oauth_code">Code<input type="text" name="code" id="oauth_code" value="<%= code %>" readonly="readonly"></label>
+    <input type="submit" value="Exchange for access token" class="btn-primary btn-lg">
+  </form>
+  <% } else { %>
+  <div>
+    <span></span>
+  </div>
+  <% } %>
+</div>

@@ -27,6 +27,7 @@ module.exports = {
 
   callback: function (req, res) {
     let code = req.param('code');
+    let debug = req.param('debug');
     console.log("exchange token");
     let requestOption = {
       uri: 'https://openapi-portfolio-int.linkplatforms.com/oauth2/token',
@@ -41,6 +42,9 @@ module.exports = {
       json: true
     };
 
+    if (debug=="true") {
+      return res.view({code: code, debug: debug});
+    }
     request(requestOption)
       // Get user
       .then(function (body) {
@@ -88,8 +92,9 @@ module.exports = {
       })
       .catch(
         function (err) {
-          res.json(502, {
-            error: err
+          res.json(500, {
+            error: "failed to exchange access token",
+            debug: err
           })
         });
   }

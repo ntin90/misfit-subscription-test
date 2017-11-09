@@ -44,6 +44,8 @@
   },
   "author": "ntin90",
   "license": "",
-  "engines" : { "node" : ">=7.0.0 <=7.9.0" },
+  "engines": {
+    "node": ">=7.0.0 <=7.9.0"
+  },
   "devDependencies": {}
 }
